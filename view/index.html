@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <title>Document</title>
+    <style>
+        /* width */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background:rgba(240,240,240,0.3);
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .list_holder{
+            padding:5px;
+            list-style-type:none;
+            height:650px;
+            overflow-y: scroll;
+            transition: 0.7s;
+        }
+        .user_list_item{
+            text-align: center;
+            padding: 15px;
+            background-color: rgb(230,230,230);
+            margin: 1px 0 1px 0;
+            transition: 0.7s;
+        }
+        .msg_list_sent{
+            border-radius: 50px 0 50px 50px;
+            text-align: left;
+            padding: 15px;
+            background-color: rgb(2,135,209);
+            color:white;
+            width: auto;
+            float: right;
+            clear: both;
+            margin-left: 30%;            
+            box-shadow: 0 0 15px rgba(0,0,0,0.12);            
+            margin-bottom: 10px;
+            transition: 0.7s;
+            
+        }
+        .msg_sent_title{
+            float: right;
+            font-size: 20px;
+        }
+        .msg_list_rec{
+            border-radius: 0 50px 50px 50px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.12);
+            float: left;
+            clear: both;
+            text-align: left;
+            padding: 15px;
+            background-color: rgb(240,240,240);
+            color:rgb(2,135,209);
+            width:auto;
+            max-width: 400px;
+            margin-right: 30%;
+            margin-top:0;
+            margin-bottom: 10px;
+            transition: 0.7s;
+        }
+        .msg_rec_title{
+            float: left;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md">
+                <div class="alert alert-success" id="notif_div" style="display: none;">sfgs</div>
+            </div>
+        </div>
+
+        <div class="row" id="chat_frm" style="margin-top:100px;">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">  
+                <div class="card">  
+                    <div class="card-body">
+                        <label>Enter your name to join chat</label>
+                        <input type="text" id="nm" class="form-control" />            
+                        <button class="btn btn-primary" onclick="join()" style="margin-top: 10px;width:100px;">Join</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row no-gutters" id="msg_window" style="display: none;">
+            <div class="col-md" id="user_container">
+                <div id="current_user_div" style="width:auto;font-size:1.3em;padding:10px 14px;background-color: aliceblue;">
+                    ...                    
+                </div>
+                    
+                <ul id="user_list" class="list_holder">
+                    
+                </ul>
+            </div>
+
+            <div class="col-md" id="chat_container">
+                
+                <div id="chatting_with_div" style="font-size:1.3em;width:auto;padding:10px 14px;background-color: aliceblue;">
+                    ...
+                </div>    
+                <ul id="msg_list" class="list_holder">
+                    <!--
+                    <li>
+                        <div class="msg_sent_title">
+                            alice
+                        </div>
+                        <div class="msg_list_sent">
+                            sdjfgsdfg sdjg sfdsfdsfdjfkhgsdjghsdkjfhsdjkfdsjfh dfjkgh dgjkhdg kfdjghdkgj hdfgjk sample message 1
+                        </div>
+                    </li>
+
+
+                    <li>
+                        <div class="msg_rec_title">
+                            ray
+                        </div>
+                        <div class="msg_list_rec">
+                            sdjfgsdfg sdjg dfjkgh dgjkhdg kfdjghdkgj hdfgjk sample message 1
+                        </div>
+                    </li>
+                    -->
+
+                    
+                </ul>
+            </div>
+        </div>
+
+        <div class="row no-gutters" id="msg_win2" style="display: none;">
+            <div class="col-md-6"></div>
+            
+            <div class="col-md-6">                
+                <input type="text" class="form-control" id="msg_tb" />
+                <button id="send_btn" onclick="send_msg()" class="btn btn-success" disabled>send</button>
+            </div>
+            
+        </div>
+
+        
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    
+    var socket = io();
+    var user_signed_id = null;
+    var current_user = null;
+
+    setInterval(function(){
+        if(current_user == null){
+            $("#send_btn").prop('disabled',true);
+        }
+        else{
+            $("#send_btn").prop('disabled',false);
+        }
+    },1000);
+
+    socket.on('refresh_users',function(users){
+        console.log(users);
+        console.log(users.length);
+        $("#user_list").empty();
+        for(var i=0;i<users.length;i++){
+            if(users[i] != user_signed_id){
+                $("#user_list").append("<li class='user_list_item'>"+users[i]+"</li>");
+            }
+        }
+    });
+
+    socket.on('joined_response',function(new_user){
+        if(new_user != user_signed_id){
+            pushNotification("",new_user+" joined");
+        }
+    });
+    socket.on('disconnect_response',function(new_user){
+        pushNotification("",new_user+" left");
+    });
+
+    function join(){
+        
+        var name = $("#nm").val();
+        if(name == null || name == "" || name.length == 0){
+            alert("enter your name");
+            return false;
+        }
+
+
+        var user_obj = {name:name};
+        
+        socket.emit('joined',user_obj);
+
+        $("#chat_frm").fadeOut(30);
+        $("#msg_window").fadeIn();
+        $("#msg_win2").fadeIn();
+
+        user_signed_id = name;
+        $("#current_user_div").text("You : "+name);
+
+        
+    }
+
+    $("#user_list").on('click','li',function (){
+        $("#user_list .user_list_item").each(function(){
+            $(this).css({"background-color":"rgb(230,230,230)","color":"black"});
+        });
+        $(this).css({"background-color":"rgb(2,135,209)","color":"white"});
+        current_user = $(this).text();
+        current_user_to_show = current_user.charAt(0).toUpperCase()+current_user.slice(1);
+        $("#chatting_with_div").text(current_user_to_show);
+        //$("#user_container").hide();
+        //$("#chat_container").show();
+        
+        $("#msg_list").empty()
+        document.title = current_user;
+    });
+
+    function send_msg(){
+        var msg = $("#msg_tb").val();
+        $("#msg_tb").val("");
+        socket.emit('send_msg',user_signed_id, current_user, msg);
+    }
+
+    socket.on('sent_msg',function(sender,receiver,msg){
+        //sending processing
+        if(receiver == current_user){
+            if(sender == user_signed_id){
+                $("#msg_list").append(
+                    "<li>"
+                        +"<div class='msg_list_sent'>"
+                            +sender
+                            +"<br/>"
+                            +msg
+                        +"</div>"
+                    +"</li>"
+                );
+            }
+        }
+
+        //receiving processing
+        if(sender == current_user){
+            if(receiver == user_signed_id){
+                $("#msg_list").append(
+                    "<li>"
+                        +"<div class='msg_list_rec'>"
+                            +sender
+                            +"<br/>"
+                            +msg
+                        +"</div>"
+                    +"</li>"
+                );
+            }
+        }
+
+ 
+            
+    });
+
+    function pushNotification(notif_type, notif_msg){
+        $("#notif_div").text(notif_msg);
+        $("#notif_div").fadeIn();
+        setTimeout(function(){
+            $("#notif_div").fadeOut();
+        },1500);
+    }
+</script>
+</html>
