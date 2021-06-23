@@ -27,6 +27,10 @@ io.on('connection',function(socket){
     socket.on('send_msg',function(user_signed_in,current_user,msg){
         io.to(user_signed_in).to(current_user).emit('sent_msg',user_signed_in,current_user,msg);
     });
+
+    socket.on('typing_to_server',function(sender,typing_status){
+        io.emit('typing_to_client',sender,typing_status);
+    });
     
     
     socket.on('disconnect',function(){
