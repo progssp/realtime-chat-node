@@ -28,18 +28,21 @@
         }
 
         .list_holder{
-            padding:5px;
             list-style-type:none;
-            height:650px;
+            height:600px;
             overflow-y: scroll;
-            transition: 0.7s;
+            transition: 0.4s;
+            padding: 0;
         }
         .user_list_item{
             text-align: center;
-            padding: 15px;
-            background-color: rgb(230,230,230);
-            margin: 1px 0 1px 0;
-            transition: 0.7s;
+            padding:14px    ;
+            background-color: rgb(240, 240, 240);
+            margin:0;
+            transition: 0.4s;
+        }
+        .user_list_item:hover{
+            background-color: rgb(200, 200, 200);
         }
         .msg_list_sent{
             border-radius: 50px 0 50px 50px;
@@ -80,20 +83,34 @@
             float: left;
             font-size: 20px;
         }
+
+        .card-footer{
+            background-color: rgb(220, 220, 220);
+        }
+        .imp_notif{
+            text-align: center;
+            width: 100%;
+            float: left;
+            font-size: 20px;
+            background-color: rgb(114, 184, 250);
+            box-shadow: 0 0 20px rgba(0,0,0,0.12);
+            color: white;
+            margin: 15px 0 15px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
 
         <div class="row">
-            <div class="col-md">
+            <div class="col-sm">
                 <div class="alert alert-success" id="notif_div" style="display: none;">sfgs</div>
             </div>
         </div>
 
         <div class="row" id="chat_frm" style="margin-top:100px;">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">  
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">  
                 <div class="card">  
                     <div class="card-body">
                         <label>Enter your name to join chat</label>
@@ -104,60 +121,69 @@
             </div>
         </div>
 
-        <div class="row no-gutters" id="msg_window" style="display: none;">
-            <div class="col-md" id="user_container">
-                <div id="current_user_div" style="width:auto;font-size:1.3em;padding:10px 14px;background-color: aliceblue;">
-                    ...                    
+        <div id="chat_win" class="card" style="display:none;">
+
+            <div class="card-body" style="padding:0;">
+                <div class="row no-gutters" id="msg_window">
+                    <div class="col-sm-4" id="user_container">
+                        <div id="current_user_div" style="width:auto;font-size:1.3em;padding:10px 14px;background-color:rgb(220, 220, 220);">
+                            ...                    
+                        </div>
+                            
+                        <ul id="user_list" class="list_holder">
+                            <li class="user_list_item">sample user</li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md" id="chat_container">
+                        
+                        <div id="chatting_with_div" style="font-size:1.3em;width:auto;padding:10px 14px;background-color: rgb(220, 220, 220);">
+                            ...
+                        </div>
+                        <span id="typing_span" style="display:none;width:auto;padding:10px 14px;background-color: aliceblue;">typing ...</span>    
+                        <ul id="msg_list" class="list_holder">
+                            <!--
+                            <li>
+                                <div class="msg_sent_title">
+                                    alice
+                                </div>
+                                <div class="msg_list_sent">
+                                    sdjfgsdfg sdjg sfdsfdsfdjfkhgsdjghsdkjfhsdjkfdsjfh dfjkgh dgjkhdg kfdjghdkgj hdfgjk sample message 1
+                                </div>
+                            </li>
+                        
+
+
+                            <li>
+                                <div class="msg_rec_title">
+                                    ray
+                                </div>
+                                <div class="msg_list_rec">
+                                    sdjfgsdfg sdjg dfjkgh dgjkhdg kfdjghdkgj hdfgjk sample message 1
+                                </div>
+                            </li>
+
+
+                            <li class="imp_notif">Kathryn joined the chat</li>
+                            -->
+
+                            
+                        </ul>
+                    </div>
                 </div>
-                    
-                <ul id="user_list" class="list_holder">
-                    <li class="user_lst_item">sample user</li>
-                </ul>
-            </div>
-
-            <div class="col-md" id="chat_container">
-                
-                <div id="chatting_with_div" style="font-size:1.3em;width:auto;padding:10px 14px;background-color: aliceblue;">
-                    ...
+                <div class="card-footer">
+                    <div class="row no-gutters" id="msg_win2">                    
+                        <div class="col-sm-11">                
+                            <input type="text" class="form-control" id="msg_tb" />
+                        </div>
+                        <div class="col-sm"></div>
+                        <div class="col-sm">
+                            <button id="send_btn" onclick="send_msg()" class="btn btn-success" disabled>Send</button>
+                        </div>
+                    </div>
                 </div>
-                <span id="typing_span" style="display:none;width:auto;padding:10px 14px;background-color: aliceblue;">typing ...</span>    
-                <ul id="msg_list" class="list_holder">
-                    <!--
-                    <li>
-                        <div class="msg_sent_title">
-                            alice
-                        </div>
-                        <div class="msg_list_sent">
-                            sdjfgsdfg sdjg sfdsfdsfdjfkhgsdjghsdkjfhsdjkfdsjfh dfjkgh dgjkhdg kfdjghdkgj hdfgjk sample message 1
-                        </div>
-                    </li>
-
-
-                    <li>
-                        <div class="msg_rec_title">
-                            ray
-                        </div>
-                        <div class="msg_list_rec">
-                            sdjfgsdfg sdjg dfjkgh dgjkhdg kfdjghdkgj hdfgjk sample message 1
-                        </div>
-                    </li>
-                    -->
-
-                    
-                </ul>
             </div>
         </div>
-
-        <div class="row no-gutters" id="msg_win2" style="display: none;">
-            <div class="col-md-6"></div>
-            
-            <div class="col-md-6">                
-                <input type="text" class="form-control" id="msg_tb" />
-                <button id="send_btn" onclick="send_msg()" class="btn btn-success" disabled>send</button>
-            </div>
-            
-        </div>
-
         
     </div>
 </body>
@@ -334,8 +360,9 @@
         socket.emit('joined',user_obj);
 
         $("#chat_frm").fadeOut(30);
-        $("#msg_window").fadeIn();
-        $("#msg_win2").fadeIn();
+        //$("#msg_window").fadeIn();
+        //$("#msg_win2").fadeIn();
+        $("#chat_win").fadeIn();
 
         user_signed_id = name;
         $("#current_user_div").text("You : "+name);
@@ -350,6 +377,7 @@
     }   
 
     function pushNotification(notif_type, notif_msg){
+        $("#msg_list").append("<li class='imp_notif'>"+notif_msg+"</li>");
         $("#notif_div").text(notif_msg);
         $("#notif_div").fadeIn();
         setTimeout(function(){
